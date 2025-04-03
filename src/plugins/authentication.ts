@@ -2,6 +2,7 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { verify } from 'jsonwebtoken';
 import fp from 'fastify-plugin';
+import config from '../config';
 
 interface User {
   id: number;
@@ -30,7 +31,7 @@ export default fp(async (fastify: FastifyInstance) => {
         return reply.code(401).send({ message: 'Não autorizado' });
       }
       
-      const decoded = verify(token, process.env.JWT_SECRET || 'secret') as User;
+      const decoded = verify(token, config.jwtSecret) as User;
       
       request.user = decoded;
     } catch (err) {

@@ -5,6 +5,7 @@ import fastifySwaggerUi from '@fastify/swagger-ui';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import { schemas } from './types';
+import config from './config';
 
 // Plugins
 import authentication from './plugins/authentication';
@@ -19,7 +20,7 @@ import scheduleRoutes from './routes/schedules';
 
 const app = Fastify({ 
   logger: {
-    level: process.env.LOG_LEVEL || 'info',
+    level: config.logLevel,
     transport: {
       target: 'pino-pretty'
     }
@@ -75,19 +76,19 @@ for (const schema of schemas) {
 app.register(authRoutes, { prefix: '/auth' });
 app.register(userRoutes, { 
   prefix: '/users',
-  preHandler: [app.authenticate]
+  preHandler: [app.authenticate as any]
 });
 app.register(deviceRoutes, { 
   prefix: '/devices',
-  preHandler: [app.authenticate]
+  preHandler: [app.authenticate as any]
 });
 app.register(personRoutes, { 
   prefix: '/persons',
-  preHandler: [app.authenticate]
+  preHandler: [app.authenticate as any]
 });
 app.register(scheduleRoutes, { 
   prefix: '/schedules',
-  preHandler: [app.authenticate]
+  preHandler: [app.authenticate as any]
 });
 
 // Rota de saúde
@@ -99,10 +100,10 @@ app.get('/health', async () => {
 const start = async () => {
   try {
     await app.listen({ 
-      port: parseInt(process.env.PORT || '3000'), 
-      host: process.env.HOST || '0.0.0.0' 
+      port: config.port, 
+      host: config.host 
     });
-    console.log(`Servidor rodando em ${app.server.address().port}`);
+    console.log(`Servidor rodando em ${config.port}`);
   } catch (err) {
     app.log.error(err);
     process.exit(1);

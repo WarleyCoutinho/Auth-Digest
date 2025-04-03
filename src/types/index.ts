@@ -11,6 +11,7 @@ export const authSchema = z.object({
 export const userInfoSchema = z.object({
   id: z.number().optional(),
   username: z.string().min(3),
+  password: z.string().min(6),
   fullName: z.string(),
   email: z.string().email(),
   role: z.string(),
@@ -39,8 +40,8 @@ export const personSchema = z.object({
   id: z.union([z.string(), z.number()]),
   name: z.string(),
   gender: z.string(),
-  start_date: z.date(),
-  stop_date: z.date(),
+  start_date: z.date().or(z.string()),
+  stop_date: z.date().or(z.string()),
 });
 
 // Building JSON schemas

@@ -3,23 +3,6 @@ import axios from "axios";
 import * as fs from "fs";
 import type { Device, Person } from "../../types";
 
-// Constants
-const INDXPERS_CPF = 0;
-const INDXPERS_NOME = 1;
-const INDXPERS_DATAINI = 6;
-const INDXPERS_DATAFIMQ = 7;
-const INDXPERS_DATAULT = 9;
-const INDXPERS_SEXO = 5;
-
-const INDXDEV_ID = 0;
-const INDXDEV_NAME = 1;
-const INDXDEV_IP = 2;
-const INDXDEV_USERNAME = 3;
-const INDXDEV_PASSWORD = 4;
-const INDXDEV_EVENT = 5;
-const INDEXDEV_LASTDATA = 6;
-const ARR_SEXO = ["INDEFINIDO", "male", "female"];
-
 export class DeviceService {
   /**
    * Creates user information JSON for the device
@@ -216,7 +199,7 @@ export class DeviceService {
     const deviceUrl = `http://${dev.ip}${deviceUri}`;
 
     const bodyData = `{ "UserInfoSearchCond":{ 
-            "searchID":"1",
+        "searchID":"1",
         "searchResultPosition": 0,
         "maxResults": 1, 
         "EmployeeNoList":[{ 

@@ -2,8 +2,8 @@
 import { FastifyInstance } from 'fastify';
 import { $ref } from '../types';
 import * as deviceRepository from '../repositories/deviceRepository';
+import * as personRepository from '../repositories/personRepository';
 import deviceService from '../services/device/deviceService';
-
 
 export default async function (fastify: FastifyInstance) {
   fastify.get('/', {
@@ -224,5 +224,3 @@ export default async function (fastify: FastifyInstance) {
     return { success: !!result, result };
   });
 }
-    
-    

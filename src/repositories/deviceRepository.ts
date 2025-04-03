@@ -8,9 +8,25 @@ export const createDevice = async (data: Omit<Device, 'id'>) => {
   });
 };
 
+export const getDeviceById = async (id: number) => {
+  return prisma.device.findUnique({
+    where: { id }
+  });
+};
+
 export const getDeviceByName = async (name: string) => {
   return prisma.device.findUnique({
     where: { name }
+  });
+};
+
+export const getDevicesByIds = async (ids: number[]) => {
+  return prisma.device.findMany({
+    where: {
+      id: {
+        in: ids
+      }
+    }
   });
 };
 

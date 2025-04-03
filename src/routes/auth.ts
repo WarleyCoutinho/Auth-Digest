@@ -4,6 +4,7 @@ import { $ref } from '../types';
 import * as userRepository from '../repositories/userRepository';
 import { compareSync, hashSync } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
+import config from '../config';
 
 export default async function (fastify: FastifyInstance) {
   fastify.post('/login', {
@@ -33,8 +34,8 @@ export default async function (fastify: FastifyInstance) {
 
     const token = sign(
       { id: user.id, username: user.username, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '8h' }
+      config.jwtSecret,
+      { expiresIn: config.jwtExpiry }
     );
 
     return { token };
