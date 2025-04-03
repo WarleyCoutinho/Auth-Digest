@@ -13,6 +13,7 @@
 		"fastify-zod": "^1.4.0",
 		"http-digest-client": "^0.0.3",
 		"i": "^0.3.7",
+		"install": "^0.13.0",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.8.2",
 		"zod": "^3.24.2"
