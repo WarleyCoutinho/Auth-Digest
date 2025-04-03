@@ -32,10 +32,10 @@ export class DeviceService {
             "valid": {
             "enable":true,
             "beginTime":"${
-              person.start_date.toISOString().split("T")[0]
+              person.start_date.toString().split("T")[0]
             }T00:00:00",
             "endTime":"${
-              person.stop_date.toISOString().split("T")[0]
+              person.stop_date.toString().split("T")[0]
             }T23:59:00"}}}`;
   }
 
@@ -46,7 +46,7 @@ export class DeviceService {
     const deviceUri = "/ISAPI/AccessControl/UserInfo/Record?format=json";
     const deviceUrl = `http://${dev.ip}${deviceUri}`;
     const bodyData = this.makeUserInfo(person);
-
+  
     try {
       const response = await axios.post(deviceUrl, bodyData, {
         headers: {
@@ -58,11 +58,11 @@ export class DeviceService {
         },
         timeout: 5000,
       });
-
+  
       return response.data;
-    } catch (error) {
-      console.error(`SENDTODEVICE ERRO DE CONEXÃO COM O DEV ${dev.name}`);
-      return null;
+    } catch (error: any) {
+      console.error(`SENDTODEVICE ERRO DE CONEXÃO COM O DEV ${dev.name}: ${error.message}`);
+      return { error: true, message: `Connection error with device ${dev.name}` };
     }
   }
 
