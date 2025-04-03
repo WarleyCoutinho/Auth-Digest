@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15
+    container_name: api-rancheiro-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: api_rancheiro
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  # API application - Development environment
+  api-dev:
+    build:
+      context: .
+      target: development
+    container_name: api-rancheiro-dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - ./images:/app/images
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/api_rancheiro?schema=public
+      - JWT_SECRET=dev-secret-key
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=debug
+      - IMAGE_STORAGE_PATH=/app/images/
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+    restart: unless-stopped
+    command: sh -c "npx prisma migrate dev && npm run dev"
+
+  # API application - Production environment
+  api-prod:
+    build:
+      context: .
+      target: production
+    container_name: api-rancheiro-prod
+    ports:
+      - "3010:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/api_rancheiro?schema=public
+      - JWT_SECRET=prod-secret-key-change-me
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=info
+      - IMAGE_STORAGE_PATH=/app/images/
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+    restart: unless-stopped
+    command: sh -c "npx prisma migrate deploy && node dist/server.js"
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

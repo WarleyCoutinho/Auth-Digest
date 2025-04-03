@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database
+  postgres:
+    image: postgres:15
+    container_name: api-rancheiro-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-api_rancheiro}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API application - Production environment
+  api:
+    build:
+      context: .
+      target: production
+    container_name: api-rancheiro
+    ports:
+      - "${API_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-postgres}@postgres:5432/${DB_NAME:-api_rancheiro}?schema=public
+      - JWT_SECRET=${JWT_SECRET:-change-this-in-production}
+      - JWT_EXPIRY=${JWT_EXPIRY:-8h}
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - IMAGE_STORAGE_PATH=${IMAGE_STORAGE_PATH:-/app/images/}
+    volumes:
+      - images_data:/app/images
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+    restart: unless-stopped
+    command: sh -c "npx prisma migrate deploy && node dist/server.js"
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  images_data:
